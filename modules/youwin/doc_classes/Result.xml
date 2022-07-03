@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Result" inherits="Reference" version="3.4">
+	<brief_description>
+        Contains a result.
+	</brief_description>
+	<description>
+        Intermediate class for safely handling errors.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+        <method name="is_ok">
+            <return type="bool" />
+            <description>
+                Returns [code]true[/code] if the [code]Result[/code] does not contain an error.
+            </description>
+        </method>
+        <method name="is_err">
+            <return type="bool" />
+            <description>
+                Returns [code]true[/code] if the [code]Result[/code] does contain an error.
+            </description>
+        </method>
+        <method name="unwrap">
+            <return type="Variant" />
+            <description>
+                Returns the stored [code]value[/code]. Returns [code]null[/code] and logs an error to the console if [code]is_err[/code] is [code]true[/code].
+            </description>
+        </method>
+        <method name="unwrap_err">
+            <return type="SafeError" />
+            <description>
+                Returns the stored [code]SafeError[/code]. Returns [code]null[/code] and logs an error to the console if [code]is_ok[/code] is [code]true[/code].
+            </description>
+        </method>
+        <method name="expect">
+            <return type="Variant" />
+            <argument index="0" name="text" type="String" />
+            <description>
+                Returns the stored [code]value[/code]. Returns [code]null[/code] and logs the specified [code]text[/code] to the console if [code]is_err[/code] is [code]true[/code].
+            </description>
+        </method>
+        <method name="expect_err">
+            <return type="SafeError" />
+            <argument index="0" name="text" type="String" />
+            <description>
+                Returns the stored [code]SafeError[/code]. Returns [code]null[/code] and logs the specified [code]text[/code] to the console if [code]is_ok[/code] is [code]true[/code].
+            </description>
+        </method>
+	</methods>
+	<members>
+        <member name="value" type="Variant" setter="set_value" getter="get_value">
+            The stored [code]value[/code]. Will be [code]null[/code] if there is an error.
+        </member>
+        <member name="error" type="SafeError" setter="set_error" getter="get_error">
+            The [code]SafeError[/code] object. Will be [code]null[/code] if there is no error.
+        </member>
+	</members>
+	<constants>
+	</constants>
+</class>

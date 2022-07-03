@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SafeError" inherits="Reference" version="3.4">
+	<brief_description>
+        Intermediate error class.
+	</brief_description>
+	<description>
+        An intermediate error class. Contains an error code along with an optional description.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+	</methods>
+	<members>
+        <member name="code" type="int" setter="set_code" getter="get_code">
+            The [code]Error[/code] code.
+        </member>
+        <member name="description" type="String" setter="set_description" getter="set_description">
+            The [code]Error[/code] description. Optional.
+        </member>
+	</members>
+	<constants>
+	</constants>
+</class>

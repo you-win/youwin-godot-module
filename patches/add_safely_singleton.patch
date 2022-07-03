@@ -1,0 +1,55 @@
+diff --git a/core/register_core_types.cpp b/core/register_core_types.cpp
+index 6843d2c7cc..20b0a6e358 100644
+--- a/core/register_core_types.cpp
++++ b/core/register_core_types.cpp
+@@ -51,6 +51,7 @@
+ #include "core/io/packet_peer_dtls.h"
+ #include "core/io/packet_peer_udp.h"
+ #include "core/io/pck_packer.h"
++#include "core/io/redirect.h"
+ #include "core/io/resource_format_binary.h"
+ #include "core/io/resource_importer.h"
+ #include "core/io/stream_peer_ssl.h"
+@@ -70,7 +71,7 @@
+ #include "core/project_settings.h"
+ #include "core/translation.h"
+ #include "core/undo_redo.h"
+-#include "core/io/redirect.h"
++#include "modules/youwin/result.h"
+ 
+ static Ref<ResourceFormatSaverBinary> resource_saver_binary;
+ static Ref<ResourceFormatLoaderBinary> resource_loader_binary;
+@@ -89,6 +90,7 @@ static _Marshalls *_marshalls = nullptr;
+ static _JSON *_json = nullptr;
+ 
+ static Redirect *redir = nullptr;
++static Safely *_safely = nullptr;
+ static IP *ip = nullptr;
+ 
+ static _Geometry *_geometry = nullptr;
+@@ -214,6 +216,7 @@ void register_core_types() {
+ 	ClassDB::register_virtual_class<ResourceImporter>();
+ 
+ 	redir = Redirect::create();
++	_safely = Safely::create();
+ 	ip = IP::create();
+ 
+ 	_geometry = memnew(_Geometry);
+@@ -269,6 +272,7 @@ void register_core_singletons() {
+ 	Engine::get_singleton()->add_singleton(Engine::Singleton("InputMap", InputMap::get_singleton()));
+ 	Engine::get_singleton()->add_singleton(Engine::Singleton("JSON", _JSON::get_singleton()));
+ 	Engine::get_singleton()->add_singleton(Engine::Singleton("Redirect", Redirect::get_singleton()));
++	Engine::get_singleton()->add_singleton(Engine::Singleton("Safely", Safely::get_singleton()));
+ }
+ 
+ void unregister_core_types() {
+@@ -305,6 +309,9 @@ void unregister_core_types() {
+ 	if (redir) {
+ 		memdelete(redir);
+ 	}
++	if (_safely) {
++		memdelete(_safely);
++	}
+ 	if (ip) {
+ 		memdelete(ip);
+ 	}

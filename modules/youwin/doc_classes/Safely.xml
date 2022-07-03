@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Safely" inherits="Object" version="3.4">
+	<brief_description>
+        Singleton for safely creating [code]Result[/code]s.
+	</brief_description>
+	<description>
+        Singleton class for safely creating [code]Result[/code]s. Needed since Godot does not allow for exposing static functions to GDScript.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+        <method name="ok">
+            <return type="Result" />
+            <argument index="0" name="value" type="Variant" />
+            <description>
+                Constructs a [code]Result[/code] and optionally stores a value. If no value is provided, [code]OK[/code] is stored instead.
+                Trying to store [code]null[/code] will result in an error.
+            </description>
+        </method>
+        <method name="err">
+            <return type="Result" />
+            <argument index="0" name="code" type="int" />
+            <argument index="1" name="description" type="String" />
+            <description>
+                Constructs a [code]SafeError[/code] with the given code. Providing a description is optional. That [code]SafeError[/code] is then stored in a [code]Result[/code].
+            </description>
+        </method>
+	</methods>
+	<members>
+	</members>
+	<constants>
+	</constants>
+</class>
