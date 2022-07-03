@@ -4,10 +4,19 @@
 
 String SafeError::to_string() {
 	Array vals;
+	vals.push_back(name.empty() ? String("") : (String("Name: ") + name + String(" ")));
 	vals.push_back(code);
 	vals.push_back(description);
 
-	return String("Error - Code: {0}, Description: {1}").format(vals);
+	return String("Error - {0}Code: {1}, Description: {2}").format(vals);
+}
+
+String SafeError::get_name() const {
+	return name;
+}
+
+void SafeError::set_name(const String &p_name) {
+	name = p_name;
 }
 
 int SafeError::get_code() const {
@@ -34,6 +43,9 @@ SafeError::SafeError() {
 SafeError::~SafeError() {}
 
 void SafeError::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_name"), &SafeError::get_name);
+	ClassDB::bind_method(D_METHOD("set_name", "name"), &SafeError::set_name);
+
 	ClassDB::bind_method(D_METHOD("get_code"), &SafeError::get_code);
 	ClassDB::bind_method(D_METHOD("set_code", "code"), &SafeError::set_code);
 
@@ -55,7 +67,6 @@ String Result::to_string() {
 
 		return String("Ok - {0}").format(vals);
 	} else {
-		// return error->_to_string();
 		return error->to_string();
 	}
 }
@@ -155,12 +166,32 @@ Ref<Result> Safely::err(const int p_code, const String &p_description) {
 	Ref<SafeError> e;
 	e.instance();
 
+	e->set_name(error_codes.get(p_code, ""));
 	e->set_code(p_code);
 	e->set_description(p_description);
 
 	r->set_error(e);
 
 	return r;
+}
+
+bool Safely::failed(Ref<Result> p_result) {
+	return p_result.is_null() || p_result->is_err();
+}
+
+String Safely::describe(Ref<Result> p_result) {
+	return p_result.is_null() ? err(INT_MAX, "Result is null, this is likely a function failure")->to_string() : p_result->to_string();
+}
+
+Ref<Result> Safely::register_error_codes(const Dictionary p_error_codes) {
+	Array keys = p_error_codes.keys();
+	Array vals = p_error_codes.values();
+
+	for (int i = 0; i < keys.size(); i++) {
+		error_codes[vals[i]] = keys[i];
+	}
+
+	return ok(OK);
 }
 
 Safely *Safely::singleton = nullptr;
@@ -177,10 +208,16 @@ Safely *Safely::create() {
 void Safely::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("ok", "value"), &Safely::ok, DEFVAL(Variant(OK)));
 	ClassDB::bind_method(D_METHOD("err", "code", "description"), &Safely::err, DEFVAL(""));
+
+	ClassDB::bind_method(D_METHOD("failed", "result"), &Safely::failed);
+	ClassDB::bind_method(D_METHOD("describe", "result"), &Safely::describe);
+
+	ClassDB::bind_method(D_METHOD("register_error_codes", "error_codes"), &Safely::register_error_codes);
 }
 
 Safely::Safely() {
 	singleton = this;
+	error_codes[INT_MAX] = "UNHANDLED_ERROR";
 }
 
 Safely::~Safely() {}

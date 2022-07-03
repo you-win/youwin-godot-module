@@ -1,17 +1,23 @@
 #ifndef YOUWIN_RESULT_H
 #define YOUWIN_RESULT_H
 
+#include "modules/regex/regex.h"
+
 #include "core/object.h"
 #include "core/reference.h"
 
 class SafeError : public Reference {
 	GDCLASS(SafeError, Reference);
 
+	String name;
 	int code;
 	String description;
 
 public:
 	String to_string();
+
+	String get_name() const;
+	void set_name(const String &p_name);
 
 	int get_code() const;
 	void set_code(const int p_code);
@@ -48,6 +54,9 @@ public:
 		return value.get_type() == Variant::NIL;
 	}
 
+	void _set_error_code(const int p_code);
+	void _set_error_description(const String &p_description);
+
 	Variant unwrap();
 	Ref<SafeError> unwrap_err();
 
@@ -64,9 +73,16 @@ protected:
 class Safely : public Object {
 	GDCLASS(Safely, Object);
 
+	Dictionary error_codes;
+
 public:
 	Ref<Result> ok(const Variant &p_value = Variant(OK));
 	Ref<Result> err(const int p_code, const String &p_description = "");
+
+	bool failed(Ref<Result> p_result);
+	String describe(Ref<Result> p_result);
+
+	Ref<Result> register_error_codes(const Dictionary p_error_codes);
 
 	static Safely *create();
 	static Safely *get_singleton();

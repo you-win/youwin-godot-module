@@ -25,6 +25,27 @@
                 Constructs a [code]SafeError[/code] with the given code. Providing a description is optional. That [code]SafeError[/code] is then stored in a [code]Result[/code].
             </description>
         </method>
+        <method name="failed">
+            <return type="bool" />
+            <argument index="0" name="result" type="Result" />
+            <description>
+                Checks if a given [code]Result[/code] is an error or [code]null[/code].
+            </description>
+        </method>
+        <method name="describe">
+            <return type="String" />
+            <argument index="0" name="result" type="Result" />
+            <description>
+                Returns a [code]String[/code] representation of the [code]Result[/code]. Null-safe.
+            </description>
+        </method>
+        <method name="register_error_codes">
+            <return type="Result" />
+            <argument index="0" name="error_codes" type="Dictionary" />
+            <description>
+                Registers an enum of error codes to be used when generating errors.
+            </description>
+        </method>
 	</methods>
 	<members>
 	</members>

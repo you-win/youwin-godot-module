@@ -11,6 +11,9 @@
 	<methods>
 	</methods>
 	<members>
+		<member name="name" type="String" setter="set_name" getter="get_name">
+            The [code]Error[/code] name. Only automatically populated if [code]register_error_codes[/code] was called.
+        </member>
         <member name="code" type="int" setter="set_code" getter="get_code">
             The [code]Error[/code] code.
         </member>
