@@ -32,6 +32,14 @@
                 Checks if a given [code]Result[/code] is an error or [code]null[/code].
             </description>
         </method>
+        <method name="maybe">
+            <return type="Result" />
+            <argument index="0" name="value" type="Variant" />
+            <description>
+                Wraps a non-null value in a [code]Result[/code]. If the input [code]value[/code] is already a [code]Result[/code], the [code]Result[/code] is returned without wrapping it in another [code]Result[/code]. If the [code]value[/code] is null, an error is generated.
+                Should be preferred over using [code]failed[/code] when possible.
+            </description>
+        </method>
         <method name="describe">
             <return type="String" />
             <argument index="0" name="result" type="Result" />

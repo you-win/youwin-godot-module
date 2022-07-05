@@ -36,6 +36,7 @@ class Result : public Reference {
 	GDCLASS(Result, Reference);
 
 	Variant value;
+
 	Ref<SafeError> error;
 
 public:
@@ -79,7 +80,10 @@ public:
 	Ref<Result> ok(const Variant &p_value = Variant(OK));
 	Ref<Result> err(const int p_code, const String &p_description = "");
 
-	bool failed(Ref<Result> p_result);
+	bool failed(const Ref<Result> p_result);
+
+	Ref<Result> maybe(const Variant &p_value);
+
 	String describe(Ref<Result> p_result);
 
 	Ref<Result> register_error_codes(const Dictionary p_error_codes);

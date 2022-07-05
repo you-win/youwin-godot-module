@@ -88,13 +88,13 @@ void Result::set_error(Ref<SafeError> p_error) {
 }
 
 Variant Result::unwrap() {
-	ERR_FAIL_COND_V(value.get_type() == Variant::NIL, Variant());
+	ERR_FAIL_COND_V(is_err(), Variant());
 
 	return value;
 }
 
 Ref<SafeError> Result::unwrap_err() {
-	ERR_FAIL_COND_V(error.is_null(), Variant());
+	ERR_FAIL_COND_V(is_ok(), Variant());
 
 	return error;
 }
@@ -175,8 +175,25 @@ Ref<Result> Safely::err(const int p_code, const String &p_description) {
 	return r;
 }
 
-bool Safely::failed(Ref<Result> p_result) {
+bool Safely::failed(const Ref<Result> p_result) {
 	return p_result.is_null() || p_result->is_err();
+}
+
+Ref<Result> Safely::maybe(const Variant &p_value) {
+	ERR_FAIL_COND_V(p_value.get_type() == Variant::NIL, err(INT_MAX, "Result is null, this is likely a function failure"));
+
+	if (p_value.get_type() == Variant::OBJECT &&
+			p_value.is_ref() &&
+			static_cast<Ref<Reference>>(p_value)->is_class("Result")) {
+		return static_cast<Ref<Result>>(p_value);
+	}
+
+	Ref<Result> r;
+	r.instance();
+
+	r->set_value(p_value);
+
+	return r;
 }
 
 String Safely::describe(Ref<Result> p_result) {
@@ -210,6 +227,9 @@ void Safely::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("err", "code", "description"), &Safely::err, DEFVAL(""));
 
 	ClassDB::bind_method(D_METHOD("failed", "result"), &Safely::failed);
+
+	ClassDB::bind_method(D_METHOD("maybe", "value"), &Safely::maybe);
+
 	ClassDB::bind_method(D_METHOD("describe", "result"), &Safely::describe);
 
 	ClassDB::bind_method(D_METHOD("register_error_codes", "error_codes"), &Safely::register_error_codes);
