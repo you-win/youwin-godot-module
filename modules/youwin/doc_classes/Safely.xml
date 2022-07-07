@@ -32,7 +32,7 @@
                 Checks if a given [code]Result[/code] is an error or [code]null[/code].
             </description>
         </method>
-        <method name="maybe">
+        <method name="wrap">
             <return type="Result" />
             <argument index="0" name="value" type="Variant" />
             <description>
@@ -50,8 +50,9 @@
         <method name="register_error_codes">
             <return type="Result" />
             <argument index="0" name="error_codes" type="Dictionary" />
+            <argument index="1" name="is_enum" type="bool" default="true"/>
             <description>
-                Registers an enum of error codes to be used when generating errors.
+                Registers an enum of error codes to be used when generating errors. Expects a Godot enum by default (String: int) but a reversed enum can be passed (int: String) by setting [code]is_enum[/code] to [code]false[/code].
             </description>
         </method>
 	</methods>

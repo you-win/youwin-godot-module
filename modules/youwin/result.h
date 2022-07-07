@@ -1,9 +1,6 @@
 #ifndef YOUWIN_RESULT_H
 #define YOUWIN_RESULT_H
 
-#include "modules/regex/regex.h"
-
-#include "core/object.h"
 #include "core/reference.h"
 
 class SafeError : public Reference {
@@ -37,26 +34,20 @@ class Result : public Reference {
 
 	Variant value;
 
-	Ref<SafeError> error;
-
 public:
 	String to_string();
 
 	Variant get_value();
 	void set_value(const Variant &p_value);
 
-	Ref<SafeError> get_error();
-	void set_error(Ref<SafeError> p_error);
-
 	_FORCE_INLINE_ bool is_ok() const {
-		return value.get_type() != Variant::NIL;
+		return value.get_type() != Variant::NIL && !is_err();
 	}
 	_FORCE_INLINE_ bool is_err() const {
-		return value.get_type() == Variant::NIL;
+		return value.get_type() == Variant::OBJECT &&
+				value.is_ref() &&
+				static_cast<Ref<Reference>>(value)->is_class("SafeError");
 	}
-
-	void _set_error_code(const int p_code);
-	void _set_error_description(const String &p_description);
 
 	Variant unwrap();
 	Ref<SafeError> unwrap_err();
@@ -82,11 +73,11 @@ public:
 
 	bool failed(const Ref<Result> p_result);
 
-	Ref<Result> maybe(const Variant &p_value);
+	Ref<Result> wrap(const Variant &p_value);
 
 	String describe(Ref<Result> p_result);
 
-	Ref<Result> register_error_codes(const Dictionary p_error_codes);
+	Ref<Result> register_error_codes(const Dictionary p_error_codes, const bool p_is_enum = true);
 
 	static Safely *create();
 	static Safely *get_singleton();
@@ -99,4 +90,4 @@ protected:
 	static void _bind_methods();
 };
 
-#endif YOUWIN_RESULT_H
+#endif // YOUWIN_RESULT_H

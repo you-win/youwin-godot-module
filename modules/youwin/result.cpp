@@ -67,7 +67,7 @@ String Result::to_string() {
 
 		return String("Ok - {0}").format(vals);
 	} else {
-		return error->to_string();
+		return String(value);
 	}
 }
 
@@ -79,14 +79,6 @@ void Result::set_value(const Variant &p_value) {
 	value = p_value;
 }
 
-Ref<SafeError> Result::get_error() {
-	return error;
-}
-
-void Result::set_error(Ref<SafeError> p_error) {
-	error = p_error;
-}
-
 Variant Result::unwrap() {
 	ERR_FAIL_COND_V(is_err(), Variant());
 
@@ -96,7 +88,7 @@ Variant Result::unwrap() {
 Ref<SafeError> Result::unwrap_err() {
 	ERR_FAIL_COND_V(is_ok(), Variant());
 
-	return error;
+	return value;
 }
 
 Variant Result::expect(const String &p_text) {
@@ -114,7 +106,7 @@ Ref<SafeError> Result::expect_err(const String &p_text) {
 		ERR_FAIL_V_MSG(Variant(), p_text);
 	}
 
-	return error;
+	return value;
 }
 
 Result::Result() :
@@ -126,9 +118,6 @@ void Result::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_value"), &Result::get_value);
 	ClassDB::bind_method(D_METHOD("set_value", "value"), &Result::set_value);
 
-	ClassDB::bind_method(D_METHOD("get_error"), &Result::get_error);
-	ClassDB::bind_method(D_METHOD("set_error", "error"), &Result::set_error);
-
 	ClassDB::bind_method(D_METHOD("is_ok"), &Result::is_ok);
 	ClassDB::bind_method(D_METHOD("is_err"), &Result::is_err);
 
@@ -138,7 +127,6 @@ void Result::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("expect_err", "text"), &Result::expect_err);
 
 	ADD_PROPERTY(PropertyInfo(Variant::NIL, "value"), "set_value", "get_value");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "error"), "set_error", "get_error");
 }
 
 #pragma endregion
@@ -170,7 +158,7 @@ Ref<Result> Safely::err(const int p_code, const String &p_description) {
 	e->set_code(p_code);
 	e->set_description(p_description);
 
-	r->set_error(e);
+	r->set_value(Variant(e));
 
 	return r;
 }
@@ -179,7 +167,7 @@ bool Safely::failed(const Ref<Result> p_result) {
 	return p_result.is_null() || p_result->is_err();
 }
 
-Ref<Result> Safely::maybe(const Variant &p_value) {
+Ref<Result> Safely::wrap(const Variant &p_value) {
 	ERR_FAIL_COND_V(p_value.get_type() == Variant::NIL, err(INT_MAX, "Result is null, this is likely a function failure"));
 
 	if (p_value.get_type() == Variant::OBJECT &&
@@ -200,9 +188,16 @@ String Safely::describe(Ref<Result> p_result) {
 	return p_result.is_null() ? err(INT_MAX, "Result is null, this is likely a function failure")->to_string() : p_result->to_string();
 }
 
-Ref<Result> Safely::register_error_codes(const Dictionary p_error_codes) {
-	Array keys = p_error_codes.keys();
-	Array vals = p_error_codes.values();
+Ref<Result> Safely::register_error_codes(const Dictionary p_error_codes, const bool p_is_enum) {
+	Array keys;
+	Array vals;
+	if (p_is_enum) {
+		keys = p_error_codes.keys();
+		vals = p_error_codes.values();
+	} else {
+		keys = p_error_codes.values();
+		vals = p_error_codes.keys();
+	}
 
 	for (int i = 0; i < keys.size(); i++) {
 		error_codes[vals[i]] = keys[i];
@@ -228,11 +223,11 @@ void Safely::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("failed", "result"), &Safely::failed);
 
-	ClassDB::bind_method(D_METHOD("maybe", "value"), &Safely::maybe);
+	ClassDB::bind_method(D_METHOD("wrap", "value"), &Safely::wrap);
 
 	ClassDB::bind_method(D_METHOD("describe", "result"), &Safely::describe);
 
-	ClassDB::bind_method(D_METHOD("register_error_codes", "error_codes"), &Safely::register_error_codes);
+	ClassDB::bind_method(D_METHOD("register_error_codes", "error_codes", "is_enum"), &Safely::register_error_codes, DEFVAL(true));
 }
 
 Safely::Safely() {

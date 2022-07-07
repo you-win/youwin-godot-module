@@ -52,9 +52,6 @@
         <member name="value" type="Variant" setter="set_value" getter="get_value">
             The stored [code]value[/code]. Will be [code]null[/code] if there is an error.
         </member>
-        <member name="error" type="SafeError" setter="set_error" getter="get_error">
-            The [code]SafeError[/code] object. Will be [code]null[/code] if there is no error.
-        </member>
 	</members>
 	<constants>
 	</constants>
