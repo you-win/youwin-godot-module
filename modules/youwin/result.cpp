@@ -1,5 +1,9 @@
 #include "result.h"
 
+#ifdef __GNUC__
+#include <limits.h>
+#endif
+
 #pragma region SafeError
 
 String SafeError::to_string() {
