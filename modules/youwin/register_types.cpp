@@ -1,12 +1,30 @@
 #include "register_types.h"
 
+#include "core/config/engine.h"
 #include "result.h"
 
-void register_youwin_types() {
-	ClassDB::register_class<SafeError>();
-	ClassDB::register_class<Result>();
-	ClassDB::register_class<Safely>();
+static Safely *safely = nullptr;
+
+void initialize_youwin_module(ModuleInitializationLevel p_level) {
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+		return;
+	}
+
+	GDREGISTER_CLASS(SafeError);
+	GDREGISTER_CLASS(Result);
+	GDREGISTER_CLASS(Safely);
+
+	safely = Safely::create();
+
+	Engine::get_singleton()->add_singleton(Engine::Singleton("Safely", Safely::get_singleton()));
 }
 
-void unregister_youwin_types() {
+void uninitialize_youwin_module(ModuleInitializationLevel p_level) {
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+		return;
+	}
+
+	if (safely) {
+		memdelete(safely);
+	}
 }

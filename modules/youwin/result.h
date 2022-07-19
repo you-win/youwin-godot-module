@@ -1,10 +1,10 @@
 #ifndef YOUWIN_RESULT_H
 #define YOUWIN_RESULT_H
 
-#include "core/reference.h"
+#include "core/object/ref_counted.h"
 
-class SafeError : public Reference {
-	GDCLASS(SafeError, Reference);
+class SafeError : public RefCounted {
+	GDCLASS(SafeError, RefCounted);
 
 	String name;
 	int code;
@@ -29,8 +29,8 @@ protected:
 	static void _bind_methods();
 };
 
-class Result : public Reference {
-	GDCLASS(Result, Reference);
+class Result : public RefCounted {
+	GDCLASS(Result, RefCounted);
 
 	Variant value;
 
@@ -45,8 +45,8 @@ public:
 	}
 	_FORCE_INLINE_ bool is_err() const {
 		return value.get_type() == Variant::OBJECT &&
-				value.is_ref() &&
-				static_cast<Ref<Reference>>(value)->is_class("SafeError");
+				value.is_ref_counted() &&
+				static_cast<Ref<RefCounted>>(value)->is_class("SafeError");
 	}
 
 	Variant unwrap();

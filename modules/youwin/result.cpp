@@ -4,7 +4,7 @@
 
 String SafeError::to_string() {
 	Array vals;
-	vals.push_back(name.empty() ? String("") : (String("Name: ") + name + String(" ")));
+	vals.push_back(name.is_empty() ? String("") : (String("Name: ") + name + String(" ")));
 	vals.push_back(code);
 	vals.push_back(description);
 
@@ -140,7 +140,7 @@ Ref<Result> Safely::ok(const Variant &p_value) {
 			"ok(...) must not contain null");
 
 	Ref<Result> r;
-	r.instance();
+	r.instantiate();
 
 	r->set_value(p_value);
 
@@ -149,10 +149,10 @@ Ref<Result> Safely::ok(const Variant &p_value) {
 
 Ref<Result> Safely::err(const int p_code, const String &p_description) {
 	Ref<Result> r;
-	r.instance();
+	r.instantiate();
 
 	Ref<SafeError> e;
-	e.instance();
+	e.instantiate();
 
 	e->set_name(error_codes.get(p_code, ""));
 	e->set_code(p_code);
@@ -171,13 +171,13 @@ Ref<Result> Safely::wrap(const Variant &p_value) {
 	ERR_FAIL_COND_V(p_value.get_type() == Variant::NIL, err(INT_MAX, "Result is null, this is likely a function failure"));
 
 	if (p_value.get_type() == Variant::OBJECT &&
-			p_value.is_ref() &&
-			static_cast<Ref<Reference>>(p_value)->is_class("Result")) {
+			p_value.is_ref_counted() &&
+			static_cast<Ref<RefCounted>>(p_value)->is_class("Result")) {
 		return static_cast<Ref<Result>>(p_value);
 	}
 
 	Ref<Result> r;
-	r.instance();
+	r.instantiate();
 
 	r->set_value(p_value);
 
